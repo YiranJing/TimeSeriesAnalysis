@@ -8,7 +8,7 @@ November, 2018
 - Yiran Jing
 - Harry Nicol
 
-- result [Final Report](../MachineLearningTimeSeries/Report.pdf)
+Result [Final Report](../MachineLearningTimeSeries/Report.pdf)
 
 ### Executive Summary
 Our neural network model forecast for South Australian power demand was able to outperform the industry standard model by 11.12%. This project used very short-term load forecasting methods to improve the one step ahead (30 minute) demand forecast for the state of South Australia. In order to reach this optimal model we added Bureau of Meteorology Adelaide weather data as an additional variable on top of variables from the energy market operator. Using the 30 minute time series data for the input variables price, demand and temperature we considered traditional time series models, machine learning methods and benchmark models.
