@@ -28,7 +28,7 @@
 - [Bootstrap CI](../master/MachineLearningTimeSeries/notebook/MachineLearningModels/NN_with_HyperparameterOptimization.ipynb) 
 Bootstrapping the MAPE and MAE of neural network resuduals\
 
-#### NOTES
+### Study Notes
 - [Study Notes](../master/TimeSeriesAnalysis/LinearRegressionTimeSeries-master/Notes.pdf) 
 Basic Knowledge for time series regression.
 
