@@ -1,9 +1,6 @@
 # Time Series Analysis
 
-**Recommand Reading**: [Statistical and ML Time Series Modelling Report](../master/MachineLearningTimeSeries/Report.pdf) 🙂
-
-
-
+**Recommended Reading**: [Statistical and ML Time Series Modelling Report](../master/MachineLearningTimeSeries/Report.pdf) 🙂
 
 
 ### NoteBook Contents
