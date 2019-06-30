@@ -1,6 +1,6 @@
 # Time Series Analysis
 
-**High-Quality Result**: [Statistical and ML Time Series Modelling Report](../master/MachineLearningTimeSeries/Report.pdf) 🙂
+**Recommand Reading**: [Statistical and ML Time Series Modelling Report](../master/MachineLearningTimeSeries/Report.pdf) 🙂
 
 
 
