@@ -1,7 +1,7 @@
 # Time Series Analysis
 
 #### Recommended Reading [Power Demand Foreast](../master/MachineLearningTimeSeries/Report.pdf)
-Reducing Power Supply Costs in South Australia using Statistical and ML Methods 🙂
+
 
 ### Projects:
 - [Power Demand Foreast](../master/MachineLearningTimeSeries/Report.pdf) Reducing Power Supply Costs in South Australia using Statistical time series Modelling and ML Methods
