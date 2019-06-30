@@ -15,4 +15,6 @@ Through EDA we identified a strong daily and weekly pattern for demand which was
 
 
 - result [Final Report](../master/MachineLearningTimeSeries/Report.pdf)
-
+- result [Final Report](../MachineLearningTimeSeries/Report.pdf)
+- result [Final Report](Report.pdf)
+- result [Final Report](../Report.pdf)
