@@ -19,6 +19,10 @@
 
 - [Model Combination and Encompassing](../master/MachineLearningTimeSeries/notebook/StatisticalModels/Model_Combination.ipynb) Combining forecasts to minimize the forecast variance.
 
+- [Another Statistical Modelling Project](../master/StatisticalTimeSeries/notebook/QBUS2820_task2.ipynb) Forecast six weeks daily sales for several stores by developing a univariate forecasting model.
+
+
+
 #### Machine Learning 
 - [NN models](../master/MachineLearningTimeSeries/notebook/MachineLearningModels/NN_with_HyperparameterOptimization.ipynb) neural network with hyperparameter optimisation process
 - [Bootstrap CI](../master/MachineLearningTimeSeries/notebook/MachineLearningModels/NN_with_HyperparameterOptimization.ipynb) 
