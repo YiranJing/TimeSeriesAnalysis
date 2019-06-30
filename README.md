@@ -1,6 +1,12 @@
 # Time Series Analysis
 
-**Recommended Reading**: [Statistical and ML Time Series Modelling Report](../master/MachineLearningTimeSeries/Report.pdf) 🙂
+#### Recommended Reading [Power Demand Foreast](../master/MachineLearningTimeSeries/Report.pdf)
+Reducing Power Supply Costs in South Australia using Statistical and ML Methods 🙂
+
+### project:
+- [Power Demand Foreast](../master/MachineLearningTimeSeries/Report.pdf) Reducing Power Supply Costs in South Australia using Statistical time series Modelling and ML Methods
+- [Statistical Time Series Modelling](../master/StatisticalTimeSeries/notebook/QBUS2820_task2.ipynb) Forecast six weeks daily sales for several stores by developing a univariate forecasting model.
+
 
 
 ### NoteBook Contents
@@ -16,7 +22,6 @@
 
 - [Model Combination and Encompassing](../master/MachineLearningTimeSeries/notebook/StatisticalModels/Model_Combination.ipynb) Combining forecasts to minimize the forecast variance.
 
-- [Another Statistical Modelling Project](../master/StatisticalTimeSeries/notebook/QBUS2820_task2.ipynb) Forecast six weeks daily sales for several stores by developing a univariate forecasting model.
 
 
 
