@@ -1,10 +1,12 @@
 # Time Series Analysis
 
-**High-Quality Output**: [Statistical and ML Time Series Modelling Report](../master/MachineLearningTimeSeries/Report.pdf)
+**High-Quality Result**: [Statistical and ML Time Series Modelling Report](../master/MachineLearningTimeSeries/Report.pdf)
 
 
-## NoteBook Contents
 
+
+
+### NoteBook Contents
 #### Data Analysis and Visualisation
 - [DataCleaning](../master/MachineLearningTimeSeries/notebook/EDAandFeatureEngineering/DataCleaning.ipynb) Proper way to remove outliers for time series data
 - [EDA and Feature Engineering](../master/MachineLearningTimeSeries/notebook/EDAandFeatureEngineering/EDA_and_Feature_Engineering.ipynb) Time decomposition and Seasonality Plot. Stationary check and transformation by ACF and PACF plots.
