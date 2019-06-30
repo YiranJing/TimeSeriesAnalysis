@@ -26,4 +26,9 @@
 #### Machine Learning 
 - [NN models](../master/MachineLearningTimeSeries/notebook/MachineLearningModels/NN_with_HyperparameterOptimization.ipynb) neural network with hyperparameter optimisation process
 - [Bootstrap CI](../master/MachineLearningTimeSeries/notebook/MachineLearningModels/NN_with_HyperparameterOptimization.ipynb) 
-Bootstrapping the MAPE and MAE of neural network resuduals
+Bootstrapping the MAPE and MAE of neural network resuduals\
+
+#### NOTES
+- [Study Notes](../master/TimeSeriesAnalysis/LinearRegressionTimeSeries-master/Notes.pdf) 
+Basic Knowledge for time series regression.
+
