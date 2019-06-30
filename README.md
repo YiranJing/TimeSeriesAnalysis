@@ -4,8 +4,8 @@
 
 
 ### Projects:
-- [Power Demand Foreast](../master/MachineLearningTimeSeries/Report.pdf) Reducing Power Supply Costs in South Australia using Statistical time series Modelling and ML Methods
-- [Statistical Time Series Modelling](../master/StatisticalTimeSeries/notebook/QBUS2820_task2.ipynb) Forecast six weeks daily sales for several stores by developing a univariate forecasting model.
+- [Power Demand Foreast](../master/MachineLearningTimeSeries/Report.pdf) Reducing Power Supply Costs in South Australia using Statistical time series Modelling and ML Methods. (QBUS3830)
+- [Statistical Time Series Modelling](../master/StatisticalTimeSeries/notebook/QBUS2820_task2.ipynb) Forecast six weeks daily sales for several stores by developing a univariate forecasting model. (QBUS2820)
 
 ### Study Notes
 - [Study Notes](../master/TimeSeriesAnalysis/LinearRegressionTimeSeries-master/Notes.pdf) (ECMT 2160)
