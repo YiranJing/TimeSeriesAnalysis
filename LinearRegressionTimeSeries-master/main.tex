@@ -1,0 +1,1383 @@
+\title{ECMT2160\\ Econometric Analysis \\ Time Series}
+\author{Yiran Jing 
+}
+\date{November, 2018}
+\documentclass[12pt]{article}
+\usepackage[toc,page]{appendix}
+\usepackage{graphicx} 
+\usepackage{float}
+\usepackage{caption}
+\usepackage{subcaption}
+\usepackage{geometry}
+\usepackage{amsmath}
+\usepackage{lscape}
+\usepackage{natbib}
+\usepackage{adjustbox}
+\usepackage{changepage}
+\usepackage{multicol}
+\usepackage{booktabs}
+\usepackage{coloremoji}
+
+
+\usepackage[dvipsnames]{xcolor}
+\definecolor{mypink1}{rgb}{0.858, 0.188, 0.478}
+\definecolor{mypink2}{cmyk}{0, 0.7808, 0.4429, 0.1412}
+\definecolor{mygray}{gray}{0.6}
+\colorlet{myorange}{green!10!orange!90!}
+
+\geometry{
+	a4paper,
+	total={170mm,257mm},
+	left=25mm,
+	right=25mm,
+	top=25mm,
+	bottom=20mm}
+
+\newcommand{\HRule}[1]{\rule{\linewidth}{#1}}
+\setcounter{tocdepth}{5}
+\setcounter{secnumdepth}{5}
+
+\begin{document}
+
+\title{ \normalsize \textsc{ECMT2160: Econometric Analysis}
+		\\ [2.0cm]
+		\HRule{0.5pt} \\
+		\LARGE \textbf{\uppercase{Linear Regression Analysis with Time Series Data}}
+		\HRule{2pt} \\ [0.5cm]
+		\normalsize \vspace*{5\baselineskip}}
+\date{Semester 2, 2018}
+\author{Yiran Jing\\}
+\maketitle
+
+\pagenumbering{gobble}
+\newpage
+\thispagestyle{empty}
+\section*{Summary}
+
+In this course, we focus on OLS method in time series data and thus, firstly, we must judge 'correct' model based on \textbf{Gauss-Markov Assumptions}, which are similar with cross sectional data, but actually more challenge and harder to achieve. \\
+
+\noindent
+Unlike cross sectional data, time series have some special features: trend, cyclic, seasonality. We only consider simple trend pattern (linear and exponential trend) in this course. 
+\\
+
+\noindent
+To make model reliable, we emphasis \textbf{stationary} and \textbf{weak dependency}. As they are important to ensure stable properties of stochastic process over time. Also, CLT and LLN need weak dependence and stationary hold.
+\\
+
+\noindent
+For the model part, we study \textbf{static model} first, which is not used for forecast, but good at trade-off interpretation, and also the basic idea of hypothesis tests (e.g. serial correlation test) and some advanced model (e.g. error correction model). \textbf{Lag distributed model} is another basic model, based on the intuition that time series always have 'lag effect'. For forecast purpose, we study \textbf{AR} and \textbf{VAR model}. 
+\\
+
+\noindent
+Given I(1) series, We talk about two potential issues in time series \textit{linear} regression: \textbf{Spurious} and \textbf{cointegration}. Spurious regression is actually no relationship but we falsely believe they have, while cointegration is related to long run relationship but inequilibrium in short run. From this point, we can realize how important to ensure stationary and weak dependent for modelling. Otherwise, we can easily make mistake and cannot figure out.
+\\
+
+\noindent
+we discuss \textbf{hypothesis tests} for unit root, serial correlation, cointegration, Granger causality. But actually hypothesis test plays minor role in statistical inference, as they are based on model, but all models are wrong. And statistical significant has no relationship with practical significant. 
+
+\addcontentsline{toc}{section}{Summary}
+\newpage
+\tableofcontents
+\newpage
+\setcounter{page}{1}
+
+{\color{RoyalBlue}
+\section{Introduction of Time Series Analysis}}
+\pagenumbering{arabic}
+
+{\color{RoyalBlue}
+\subsection{Time Series Data}}
+A sequence of RV indexed by Time.(fixed intervals, stored chronologically) (\textit{Stochastic Process}). Intuitively, just data with autocorrelation/ corrected over time! and thus it is important information to help us to forecast!
+\begin{equation}
+\{ Y_t: t = 1,2,3...T \} = \{Y_1, Y_2, ..., Y_T \} \ 
+\end{equation}
+The sample size for a time series data set is the number of time periods T.
+\\
+\noindent
+{\color{ForestGreen}\textbf{Remark: }} 
+\begin{itemize}
+\item 
+Big difference with cross sectional data is: \textbf{data ordering}, time series must \textbf{fix order}, while cross sectional can shuffle index anyway we like. 
+\item
+Also, in time series data, at any given period, we only observe \textbf{ one realization/ outcome} of a RV. (cross-sectional + time series = panel data).
+\item
+Another difference between cross-sectional and time series data is that the \textbf{randomness} in time series data is diff from cross sectional case. Certainly, outcomes is random variable time series case. 
+\end{itemize}
+
+{\color{RoyalBlue}
+\subsection{Time Series Analysis}}
+Time series analysis involves developing econometric methods capable of estimating and interpreting model parameters, testing hypotheses concerning economic phenomena, and making forecasts of economic variables.
+\\
+
+\textit{Dynamic Linear Models (DLMs)/State Space Model} define a very general class of non-stationary time series models. 
+\\
+
+{\color{RoyalBlue}
+\subsubsection{Introduction of Time series patterns}}
+We interpret a time series as:
+$$Y_t =f(T_t,S_t,C_t,E_t)$$
+\begin{itemize}
+\item Trend component:
+Time series models may incorporate \textit{trends}, as economic data are often trending (increasing or decreasing for extended periods). In this course, we consider two common trend pattern: linear and exponential trend.
+\item Seasonality:
+For time series data at the monthly and quarterly frequencies, seasonality can be an issue and needs to be addressed. Time series data can have complex Seasonality pattern.
+\item Cyclic Component:
+A cyclic pattern exists when there are medium or long run fluctuations in the time series that are not of a fixed period.
+\item Irregular: 
+Short term fluctuations and noise. Generally after removing other components, white noise already. AND sometimes, we can based on irregular plot to decide if cleaning data needed.
+\end{itemize}
+
+\textbf{white noise}: The time series is \textbf{uncorrelated over time} is known as white noise. (i.e. indexed by time and also un autocorrelated). If a time series is white noise, it is a sequence of random number and cannot be predicted. And thus, if the forecast errors are not white noise, it suggests we can improve model further. Note that white noise can be homoskedasiticity or heteroskedasticity. And we can use robust method if heterosiedasticity. 
+
+{\color{RoyalBlue}
+\subsection{Gauss-Markov Assumption}}
+
+OLS on time series data can be \textbf{unbiased}, but we need \textbf{quite strict assumptions} for this to work. We can use a lot of assumptions that were similar with cross sectional OLS case. Generally, the statistical properties of OLS in cross-sectional data cases are easily to be violated in time series data cases.
+\\
+
+\begin{itemize}
+\item \textbf{Linearity:} Same as cross sectional case.
+\begin{equation}
+y_t =\beta′x_t +\epsilon_t
+\end{equation}
+where $x_t = (x_t1,x_t2,...,x_{tn})’$ and β is the associated set of parameters. We assume that $y_t$ is a linear combination of $\beta$ terms and an error term.
+
+\item \textbf{No Perfect Collinearity:}
+No independent variable is constant and no explanatory varaiable is an exact linear function of the others. This assumption \textbf{rules out perfect correlation} between the explanatory variables. $Corr(x_{t,j}, x_{t+1,j}) \ne 1, Corr(x_{t,j}, x_{t+1,j}) \ne 0 $. 
+\\
+The consequence of \textbf{high correlation among the explanatory variables over time} : still unbiased and consistent, but it can \textbf{cause difficulty in precisely estimating parameters} (i.e. Cause the variance of the estimators to be high and affect standard inferences.).
+
+\item \textbf{Strict Exogeneity:}
+The regressors are contemporaneously exogenous, that is:
+\begin{equation}
+E(\epsilon_t | \textbf{X}) = 0, \forall t  \\
+\end{equation}
+where
+$$ X=(x_1, x_2, .... , x_T)', matrix \ of \ regressors $$ 
+X is vectors in multi-variate regression. 
+\\
+
+\noindent
+\textbf{Extrictly exogeneity: } there is no correlation or relationship between the error term and the explanatory variables for \textbf{all} the time.
+\\
+
+BUT anything that results in the unobservables at time t, correlated with any explanatory variables at any time period (\textit{omitted variable}) is a violation of strict exogeneity assumption. Thus, we consider a less restrictive form \textbf{weak exogeneity}.
+\begin{equation}
+E(\epsilon_t|x_t, x_{t-1}\, x_{t-2}\, ...) = 0
+\end{equation}
+ This means that conditional expectation of error term is not zero for all time periods, just uncorrelated with \textbf{the current and past} explanatory variables, say nothing about the future.
+Also, we define \textbf{contemporaneous exogeneity}:
+ \begin{equation}
+E(\epsilon_t|x_t) = 0
+\end{equation}
+This imply NO correlation between the explanatory variables and the error term for within that time period only. The good news is the contemporaneous exogeneity is \textbf{enough for consistency} in OLS. But fail in unbiased.
+\end{itemize}
+
+\noindent
+{\color{ForestGreen}\textbf{Remark: }} 
+\begin{itemize}
+\begin{itemize}
+\item
+Under the assumptions 1,2 3 of linearity, \textbf{no perfect collinearity, and strict exogeneity}, the OLS estimator is \textbf{unbiased}. 
+$E(\hat{\beta}) = \beta$
+\item
+under the assumptions 1,2 3, the error terms ${\epsilon_t}$ are allowed to be correlated over time. $corr(\epsilon_t, \epsilon_{t+1}) \ne 0 $, so the correlation between explanatory variables over time does not affect unbiasedness.
+\item
+Limitation of unbiased (based on assumption 1,2 3): unbiasedness say nothing about how \textit{precise} the OLS are, and does not give way to test hypotheses or construct CI (We don’t know anything regarding certainty). Therefore, we need assumption 4-6 to be satisifed in order for us to test hypothesis and construct confidence intervals so that we can derive the estimator’s distribution.
+\end{itemize}
+\end{itemize}
+
+
+
+
+\begin{itemize}
+\item \textbf{Homoskedasticity:}
+The conditional variance of error term is constant over time.
+\begin{equation}
+V(\epsilon_t|\textbf{X}) = \sigma^2, \forall t
+\end{equation}
+
+\item \textbf{No Autocorrelation:}
+The error terms are uncorrelated over time.
+\begin{equation}
+Cov(\epsilon_t, \epsilon_s|\textbf{X}) = 0, \forall t \ne s
+\end{equation}
+We are saying here that there is no covariance between error terms across all time periods. But in time series data, it is very easily violated, so we discuss it more detailed and give method to correct it in chapter 6. 
+\\
+
+With assumption 4 and 5, we can now derive the \textbf{spherical disturbances} assumption:
+\begin{equation}
+X(\epsilon \epsilon'|\textbf{X}) = \sigma^2 \textbf{I} , \forall t \ne s
+\end{equation}
+where I is the T-dimensional identity matrix and $\sigma^2 \textbf{I}$ is T*T dimension. Since it is an identity matrix, that means we don’t have any covariance between error terms across time but we do have variance terms for the error terms.
+\\ 
+
+\noindent
+{\color{DarkOrchid}
+\textbf{ Three different kinds of correlations: }}\\
+Note that we have 3 different kinds of correlations that may differ across time series regression and need to consider.
+\begin{enumerate}
+\item \textbf{correlation between a predictor $\{x_t\}$ itself across time: } Correlation between $x_{t,j}$ and $x_{s,j}$. This is \textbf{not an issue} and always happen, unless there is a perfect linear relationship.
+
+\item \textbf{Correlation between} $x_{t,j}$ \textbf {and} $\epsilon_s$:
+This violates the strict exogeneity assumption and this leads to OLS being \textbf{biased} as a result. However, we can still have weakly exogeneity assumption.
+
+\item \textbf{Serial correlation between $\epsilon_t$ and $\epsilon_s$}. Correlation between error term in different period. This violates no autocorrelation assumption 5 but only affects the \testbf{efficiency} of the OLS estimator. Does not cause bias.
+\end{enumerate}
+
+It is possible to have the strict exogeneity satisfied, while the no no autocorrelation is violated. And gnerally, serial correlation in $x_{t,j}$ is allowed and even expected! 
+
+
+\textbf{Autocorrelation:}
+\begin{equation}
+\rho\ =\ \frac{\sigma_{x_t,x_s}}{\sigma_{x_t}\sigma_{x_s}},\ \forall t\ne s
+\end{equation}
+Assume $s = t - k, (k = 1,2,3 ...)$, then define \textbf{Autocorrelation of the order k}:
+\begin{equation}
+\rho_k\ =\ \frac{\sigma_{x_t,\ x_{t-k}}}{\sigma_{x_t}\sigma_{x_{t-k}}},\ \forall k
+\end{equation}
+Note that $\rho_t$, $\rho_{t-k}$ come from te same stochastic process. 
+\\
+
+Under the assumption of \textbf{stationary}, we have \textit{constant variance}:
+\begin{equation}
+\sigma_t\ = \sigma_{t-k}\ = \sigma_0, \forall t
+\end{equation}
+and thus covariance only related to k:
+\begin{equation}
+\sigma_{x_{t,}x_{t-k}\ =\ }\sigma_{x_{s,}x_{s-k}\ =\ }\sigma_{k\ },\ \forall s,t
+\end{equation}
+\textbf{autocorrelation of stationary series}:
+\begin{equation}
+\rho_k=\frac{\sigma_k}{\sigma_0^2}
+\end{equation}
+where $$\sigma_k\ =\ E\left[\left(x_t-\overline{x}\right)\left(x_{t-k}-\overline{x}\right)\right],\ \sigma_0\ =\ E\left[\left(x_t-\overline{x}\right)^2\right]$$
+Note that we only have 1 $\overline{x}$ since the mean is the same due to stationary data. And in Weakly stationary case, the formula of order k autocorrelation is a function of k, nothing to do with t.
+\\
+
+\noindent
+\textbf{Gauss-Markov assuption: }Under Assumption 1 -5, the OLS estimator is the \textbf{Best Linear Unbiased estimator (BLUE)}.
+\\
+
+\item \textbf{Normality:}
+Cannot perform exact inference unless add normality assumption:
+$\epsilon_t$ is iid as normal random variables with zero mean and constant variance.
+$$
+\epsilon_t \sim N\left(0,\ \sigma^2\right), \forall t
+$$
+The \textit{Gauss Markov Assumptions} and \textit{normality assumption} gives us the \textbf{Classical Linear Model assumptions} (CLM) for time series. We need this so that we can perform exact inferences. Then, all of the statistical inference procedures can be applied here (same as the cross sectional case):
+\begin{enumerate}
+  \item \textbf{t statistic} have exact \textbf{$t_{T-k-1}$} distributions under the null hypothesis (k is the number of regressors).
+  \item \textbf{F statistic} have exact F distributions under the null hypothesis.
+\end{enumerate}
+\\
+
+\end{itemize}
+{\color{ForestGreen}\textbf{Remark: }} 
+\begin{itemize}
+\item
+With contemporaneous exogeneity, this is sufficient for OLS estimators to be consistent. But not enough to ensure unbiasedness. 
+\item
+\textbf{Serial correlation} (fail in assumption 5) tends to be a problem even when strict exogeneity holds. – namely, static and finite distributed lag models – serial correlation is often a problem.
+\item
+When \textbf{spherical disturbances} assumption holds, OLS is BLUE and usual OLS variance formulas apply. 
+\item
+we can add \textit{normality} and then exact inference. However, the full set of CLM assumptions tends to be highly unrealistic for many real cases.
+
+\end{itemize}
+
+
+{\color{RoyalBlue}
+\subsection{Issues In Using OLS with Time Series Data}}
+\noindent
+\color{purple} \boldsymbol{Summary}\\
+\color{black}
+
+\begin{enumerate}
+\item \textbf{Large Sample Approximation:} Same as cross-sectional analysis, in time series analysis, if Error term not from normal dist, we must reply on CLT to justify the usual OLS test statistic and Confidence Interval. 
+\item \textbf{Strict Exogenous Assumption:} might be violated in static model and distributed lag models. And must be violated in models with lagged dependent variables
+\item \textbf{Random Sampling:} Big Challenge in time series cases as observations always correlated over time. 
+\item \textbf{CLT possible in weakly dependent case: } It is lucky that the CLT holds for the weakly dependent time series process. The key is whether the correlation bet variables at different time periods tends to zero quickly enough. 
+The time series that are not weakly dependent, (examples in 11.3), donot generally satisfy the CLT. 
+\item \textbf{CLT possible in stationary case: } The CLT for time series data requires stationarity  and some form of weak dependence: thus, the sationary and wealy dependence are idea for use in multiple regression analysis. 
+
+\end{enumerate}
+
+{\color{RoyalBlue}
+\subsubsection{Stationary Time Series}}
+
+Stationary is an aspect of \textbf{a sequence} result, not for single point. We use stationary process means the strict form. \\
+A (strict) stationary time series is a sequence of a random variable collected over time, whose probability distribution are stable. Stationary process can be highly correlated, and it does require that the nature of any correlation for fixed time horizon h is same over time.\\ 
+
+\begin{itemize}
+
+\item \textbf{Non-Stationary: } At minimum, it means change over time!
+
+\item \textbf{Strict Stationary: } Fixed the time horizon h, the \textbf{shift joint distribution} does not change. 
+
+\item \textbf{Weak stationary/ Covariance-stationary: } When sequence ${x_t}$, with finite second moment, i,e, $E(x_t) < \infty , \forall t$, and satisfy:
+\begin{equation}
+E(Y_t) = \mu  \\
+\end{equation}
+\begin{equation}
+V(Y_t) = \sigma^2 \\
+\end{equation}
+\begin{equation}
+Cov(Y_t, Y_{t+h}) = g(h), 
+\end{equation} a function of h only. 
+\\
+
+The weakly stationary process focus only on the first and second moments of a stochastic process. i.e. it only need the \textbf{mean and variance exsit and constant over time}.
+\end{itemize}
+
+\\
+\noindent
+{\color{ForestGreen}\textbf{Remark: }} 
+\begin{itemize}
+\item
+\textbf{Strict stationary $\ne$ weakly dependent \\
+Strict stationary $\ne$ weak stationary \\
+Weak stationary $\ne$ weakly dependent
+}.\\ When a strict stationary has finite second moment, it is Weakly Stationary. 
+\item 
+Simple strict stationary do NOT imply weakly stationary.
+For example, a strong stationary process related to the stable Cauchy joint pdf when shifted over time, but it fail in covariance stationary, as Cauchy dist has undefined mean and variance (infinity first and second moments).
+\item
+When a (strict) stationary process has a \textbf{finite second moment}, then it must be weakly stationary, but the converse is not true. 
+\item
+A unit root time series is non-stationary, but \textbf{non-stationary series might not a unit root} as there are lots of other ways a time series can be non-stationary, such as being trend stationary.
+\item
+Stationarity is a property of a process \ sequence, not time series themselves. These processes generate time series.
+
+\end{itemize}
+{\color{Mulberry}\textbf{Stationary in LLN and CLT: }}\\
+Stationary simplifies statements of the LLN and CLT. As only when the features of variable are stable over time, we can have chance to lean some things from regression. Otherwise, if variable is just an arbitrary fact, it is impossible for us to conclude/predict anything, as the history cannot be useful in the future. In the multiple regression model for time series, we are assuming a certain form of stationary in that the $\beta_j$ does not change over time, and based on this, the CLT is possible to be hold.\\
+
+
+{\color{RoyalBlue}
+\subsubsection{Weakly Dependent Time Series}}
+Another main concept for CLT holds!
+Dependency places restrictions on how stronth related the RV $X_t$ and $X_{t+h}$ as h increases without bound. 
+\\
+
+A covariance stationary time series is weakly dependent if the correlation bet  $X_t$ and $X_{t+h}$ goes to zero sufficientlt quickly as h goes to infinity. i.e. as the variable goes further over time, the correlation bet them becomes smaller and smaller, and become almost independent as h increase:
+\begin{equation}
+    Corr(Y_t, Y_{t+h}) \rightarrow 0,    h \rightarrow \infty
+\end{equation}
+\noindent
+{\color{Mulberry}\textbf{Weak dependent in LLN and CLT: }}\\
+Essentially, weak dependent replace the assumption of Random sampling in LLN and CLT. The simplest example of a weakly dependent time series is an iid sequence. 
+\\
+
+An \textbf{asymptotically uncorrelated} example is \textbf{Stable AR(1) model}:
+\begin{equation}
+    y_t = \rho y_{t-1} + e_t, t = 1,2,3 ...
+\end{equation}
+The starting point is $y_0$ at t = 0, and residual is an iid sequence with mean 0 and constant variance. Also the $e_t$ ind of $y_t$. With $\left|\rho\right| < 1$, then, $corr(y_t, y_{t+h}) = \rho^h$ goes to zero (convergent geometric series). \\
+By contrast, when $\rho = 1$, \textbf{Random walk model here is not weakly dependent}, the geometric series is divergent. 
+\\
+
+\noindent
+{\color{ForestGreen}\textbf{Remark: }} \\
+The \textbf{trending series (non stationary) can be weakly dependent}. i.e. There is no relationship bet stationary and dependent.
+For example, the simple linear time trend model 
+$$Y_t = \alpha_0 + \alpha_1 t +e_t $$
+is actually weakly dependent. 
+\\
+
+\noindent
+\textbf{Difference-stationary process: }\\
+
+Unit root processes like random walks are I(1). \textbf{I(1) means that first differencing them will lead to a weakly dependent series (and often stationary process)}. 
+Therefore, a time series that is I(1) is said to be a \textbf{difference-stationary process}, i.e. I(1) can get stationary after first difference. 
+\\
+
+\textbf{I(0): A stationary, weakly dependent time series process that, when used in regeression analysis, satisfies the LLN and the CLT}. So, Covariance stationary is I(0). i.e. \textbf{all stationary time series are I(0) processes but not all I(0) processes are stationary}. I(0) process is a necessary but not sufficient condition for a time series to be stationary. 
+\\
+
+When we talk about I(D), it talks about the \textbf{number of times we need to difference the time series in order to get a stationary data}.
+After you differenced it, the new time series you generated by differencing it is I(0), since you don't need to difference it to make it stationary. The original time series is described to be I(1) whilst the new time series is I(0), it's all a matter of perspective on which time series you are describing. Hence, I(0) is a different case so don't worry too much about it. 
+\\
+
+
+{\color{RoyalBlue}
+\subsubsection{Asymptotic Properities of OLS}}
+
+
+{\color{RoyalBlue}
+\subsubsection{Highly Persistent Time Series in Regression Analysis}}
+Random walk staff here
+
+
+\newpage
+{\color{RoyalBlue}
+\section{Basic Models}}
+\noindent
+\color{purple} \boldsymbol{Summary}\\
+\color{black}
+\begin{itemize}
+\item
+Static models closely resemble cross-sectional models (e.g., data ordering doesn’t matter here)
+\\
+Static models typically used to estimate a contemporaneous relationship between two or more variables. Static models do not capture effects that take place with a delay (autoregressive with itself), which is big difference with AR/VAR model
+\item
+Distributed lag models can used for such purposes (data ordering matters here).
+\item
+Both static model and distributed lag model \textbf{can not be suitable for forecasting}:\\
+They ignore that past outcomes on y can also help forecast y; \\
+The future realisations of x need to be known in order to forecast y; ( forecast $y_t$ when $x_t$ has already know? stupid). 
+\item
+Static model and DL model are good in terms of \textbf{interpreting casual effects for two variables in the same time period}. 
+\end{itemize}
+
+\newpage
+{\color{RoyalBlue}
+\subsection{Static Model}}
+A static model is only for the current time period and relates two or more time series with each other. We use static model when we interest in knowing the \textbf{contemporaneous trade off} between Y and Z. For example, the \textit{Phillips Curve}:
+\begin{equation}
+   Inf_t = \alpha + \beta Unem_t + \epsilon_t
+\end{equation}
+where $Inf_t$ is the annual inflation rate and unemt is the annual unemployment rate. This form of the Phillips curve assumes a \textit{constant natural rate of unemployment} and \textit {constant inflationary expectations}, $\beta$ measure a potential \textbf{contemporaneous trade off} between inflation and unemployment. (positive trade off when $\beta > 0 $)
+\\
+More generally:
+\begin{equation}
+    y_t =\alpha_t + \beta_1 x_{1,t} +...+\beta_k x_{k,t} +\epsilon_t,\ \   \epsilon_t \sim iid \N\left(0,\ \sigma^2\right)
+\end{equation}
+whereby $\beta_j$ looks at only the \textit{contemporaneous relationship} between $\{x_j\}$ and $\{y\}$. For example, the \textbf{ceteris paribus effect of an
+increase in the $Y_t$ on a value of $x_{1,t}$}
+\\
+\\
+\noindent
+{\color{DarkOrchid}
+\textbf{ Assumption of static model: }}
+\begin{enumerate}
+  \item \textbf{white noise of error term: } white noise are where observations are not autocorrelated with each other, homoskedastic, and indexed by time.
+  \item \textbf{Only contemporaneous relationship: } Assume a change in $Z_t$ at time t has \textit{immediate} effect on $y_t$. So, serial correlation easily to be a problem in static model.
+\end{enumerate}
+
+
+\\
+
+\noindent
+{\color{ForestGreen}\textbf{Remark: }} 
+\begin{itemize}
+\item 
+Recall that \textbf{serial correlation is the correlation of a variable with itself over time}. Serial correlation for the error terms does not affect the bias or consistencies of least squares, but less efficiency and fail in statistical inference. even in the case of large samples.  (See the issue of serial correlation section)
+\item
+If \textbf{strictly exogeneous}, then unbiased and consistent OLS possible. BUt If only \textbf{contemporaneously exogenous}, then OLS is consistent only (might biased) given the time series are weakly dependent. 
+\end{itemize}
+
+
+\newpage
+{\color{RoyalBlue}
+\subsection{Distributed Lag Models}}
+DL model are good for estimating \textbf{lagged effects} of, say, policy.
+Useful when effects are not immediately and the past can affect the future.
+\\
+
+
+{\color{RoyalBlue}
+\subsubsection{Finite Distributed Lag (FDL) Models}}
+Instead of looking at things in a contemporaneous measure, we can add in lag effects when we believe one or more variables to affect y with a lag.
+\\
+
+Suppose we think that a change in a variable z today, can affect a variable y up to two periods into the future.Then, the required FDL model is:
+\begin{equation}
+ umbrellassold_{t\ }=\alpha_0+\delta_0rain_t\ +\ \delta_1rain_{t-1\ }+\delta_2rain_{t-2\ }\ +\epsilon_t
+\end{equation}
+which tells us that umbrellas sold today is affected by amount of rain today, yesterday, and 2 days ago (since if it’s been raining for past few days, people will start giving in and buying their own umbrellas instead of stealing it from poor souls at Fisher library).
+\\
+
+\noindent
+In general, an FDL model of order q is given by:
+\begin{equation}
+y_{t\ }=\alpha_0+\delta_0z_t\ +\ \delta_1z_{t-1\ }+\delta_2z_{t-2\ }\ +...+\delta_qz_{t-q\ }+\epsilon_t
+\end{equation}
+Lag selection (optimal q) by economic judgment suggested theory, or \texttf{statistical tests}: Information criteria (AIC, BIC), or $R^2$
+\\
+
+\noindent
+The coefficient on the contemporaneous z, $\delta_0$, is called the \textbf{impact propensity (IP)}:\\
+\begin{enumerate}
+\item It tells us the \textbf{immediate effect} in y when z increases by one unit.
+\item If both variables are in \textit{logarithmic form}, the IP is sometimes called
+the \textbf{short run (or instantaneous) elasticity}.
+\item $\delta_0 = 0$, which impose dropping $z_t$ from regression, means no immediately effect. 
+\end{enumerate}
+
+\noindent
+The sum of all lag coefficients (including the zero-lag) is called the \textbf{long run propensity (LRP) }:
+\begin{equation}
+LRP=\delta_0 +\ \delta_1+\delta_2 +...+\delta_q 
+\end{equation}
+\noindent
+
+\begin{enumerate}
+\item 
+\textbf{Interpretation} of LRP:
+Suppose the level of z increases \textbf{permanently} at a given period in time (e.g., the minimum wage increases by 1.00 per hour and stays there). The LRP is the \textit{ceteris paribus} (holding others constant) change in y after the change in z has passed through all q time periods.
+
+\item
+If y and z are both given in natural logarithms, the LRP is called the \textbf{long run elasticity}.
+
+\item
+\textbf{LRP intuition}: (q = 2) With a permanent effect in z, after one period, y increase by $\delta_0 +\ \delta_1$, after two period, y increase by $\delta_0 +\ \delta_1+\ \delta_2$. As suppose q = 2, there is no further change after two period. This shows that the sum of the coefficients on current and lagged z （$\delta_0 +\ \delta_1+\ \delta_2$） is the \testbf{long-run change in y given a permanent increase in z} and is called the \testbf{long-run propensity (LRP) or long-run multiplier}. 
+\end{enumerate}
+\\
+{\color{Tan} \textbf{Proof 7: Show ceteris paribus effect of z on y/ temporary increase in z}}\\
+$y_{t+3} = y_{t-1}$ in the FDL model lag 2, when change is happen at $y_t$. \\
+$\delta_0 = y_t - y_{t-1}$ : impact propensity\\
+$\delta_1 = y_{t+1} - y_{t-1}$ : change in y one period after the temporary change in z, $\delta_2 = y_{t+2} - y_{t-1}$. 
+\\
+
+\noindent
+{\color{Tan} \textbf{Proof 8: LRP, Show change of y due to permanent increase in z}}\\
+After one period, y increase by $\delta_0 +\ \delta_1$, after two period, y increase by $\delta_0 +\ \delta_1+\ \delta_2$. No further change after two period ($y_{t+2} = y_{t+3} = y_{t+4} = .... $)
+\\
+
+Gien an FDL model with lag q, it contain the static model when ater coefficients are zero. Sometimes, the primary purpose for estimating a distributed lag model is to test whether z has a lagged effect on y.
+\\
+
+For any horizon h, we can define the \textcumulative effect as $\delta_0 +\ \delta_1+\delta_2 +...+\delta_h $, which is interpreted as the change in the expected outcome h periods after a permanent, one-unit increase in x. The LRP is the cumulative effect after all changes have taken place; it is simply the sum of all of the coefficients. 
+\\
+
+\noindent
+Furthermore, note that since $z_t$ is serially correlated with itself through time (which is fine and should be expected!), it will be \textit{difficult in getting precise estimates of each $\delta$}. From this, even if we run a \textbf{F-test} on $\delta_0 = ...= \delta_h = 0$ and find that it is statistically significant, we still don’t know which lag period is significant with $y_t$ (they may be jointly significant but individually insignificant). If $\delta_0 = ...= \delta_h = 0$, then it will suggest to us to use a static model since lags are insignificant. 
+\\
+
+
+
+{\color{RoyalBlue}
+\subsubsection{Infinite Distributed Lag (IDL) Models}}
+An infinite distributed lag (IDL) model relates dependent variable to \extit{current and \textf{all past} values of independent variable}. In other words, IDL model allow a change in an explanatory variale to \textbf{affect all future values} of the dependent variable:
+\begin{equation}
+y_{t\ }=\alpha_0+\delta_0z_t\ +\ \delta_1z_{t-1\ }+\delta_2z_{t-2\ }\ +...+\epsilon_t
+\end{equation}
+Similar interpretation as in an FDL, \textbf{IP} still $\delta_0$. 
+And $\delta_h$ has same interpretation with DFL mode: \\
+\textbf{From any given level $z_s = c,\ s < t$, if z \textit{temporarily} increases y one unit., then $\delta_h$ measures the change in the \textit{expected value} of y after h period.} LRP measures the long -run change in the expected value of y, given one unit permanent increase in z.  
+\\
+
+\noindent
+For a \textbf{temporary change} in z,we have 
+\begin{equation}
+E(y_t)=\alpha +\ \delta_h 
+\end{equation}
+for IDL to make sense, we need that $\delta_h$ close to 0 as time progresses. This means that \textit{there is no long run effect from a temporary change in z}. and 
+\begin{equation}
+E(y_t)=\alpha,\  h \rightarrow\infty 
+\end{equation}
+\\
+For a \textbf{permanent change} in z, we have 
+\begin{equation}
+E(y_t)=\alpha +\ \delta_0 +\ \delta_1+\delta_2 +...+\delta_h 
+\end{equation}
+which converges to some new level as h goes to infinity.
+\\
+
+Unlike the FDL model, lag here is infinity.
+The model, of course, is only an approximation to reality (i.e., no economic process started indefinitely far into the past).
+\\
+
+\textbf{$\delta_h$ measures the change in the expected value of y after h periods}. The $\delta_j$ goes to 0 as the order j goes to infinity. This is not to say that $\delta_2$ is smaller in magnitude than $\delta_1$; it only means that \textbf{the impact of $z_{t-2}$ on $y_t$ must eventually become small as j gets large}. It make sense that the effect of a z variable on y decreases the further back in time we go! (Which makes sense since inflation in 1900 shoudn’t affect inflation in 2017). Therefore, the effects are strongest for more recent and contemporaneous effects. Note that this doesn’t mean that 2016’s effect has to be larger than 2015’s, just that when it’s really far back, it gets smaller.
+\\
+
+We implictly assume \textbf{strict exogeneity} for this model whereby even all future values of $z_t$ are uncorrelated with the error term. An issue with this model is that it assumes that future values of $z_t$ are constant and never changing which isn’t realistic (since if $z_t$ was interest rates, this would definitely be changing in 20 years time compared to today). Therefore, we use a \textbf{weak exogeneity} assumption instead (where the error is only uncorrelated with current and past z).
+\\
+ 
+{\color{RoyalBlue}
+\subsubsection{Geometric Distributed Lag (GDL) Models}}
+
+Even if we were to claim that the IDL is a useful model, we cannot estimate it without restrictions.
+The simplest \textbf{restriction type} in the geometric (or Koyck) distributed lag (GDL) model.\\
+From this, the new $\delta_j$ depends on two parameters:
+\begin{equation}
+\delta_j=\gamma\rho^j,\ \ \left|\rho\right|\ <1,\ \forall j = 0,1,2,....
+\end{equation}
+
+where $\gamma$ and $\rho$ can be positive related, or negative related. As long as $\left|\rho\right|\ <1$, the $\delta_j$ will goes to zero as n goes to innfinity. (Convergent geometric series). otherwise, divergent. To ensure $\left|\rho\right|\ <1$ in any case, we shall consider difference sometimes. 
+\\
+
+The \textbf{impact propensity (IP)} is $\delta_0=\gamma\rho^0 = \gamma$, so the \textbf{sign of impact propensity is determined by the sign of $\gamma$}, 
+\begin{equation}
+y_t=\alpha\ +\ \gamma z_t\ +\ \gamma\rho z_{t-1}\ +\ \gamma\rho^2z_{t-2}+\ ...\ +\ \epsilon_t,\ \ \left|\rho\right|\ <1
+\end{equation}
+Note that if $\gamma >0$, and $\rho >0$, then every coefficient is positve. However, if $\gamma < 0$, then the lag coefficients will alternative in sign. And \textbf{LRP also has the same sign with $\gamma$} !
+\\
+\begin{equation}
+LRP =\ \frac{\gamma}{1-\rho}
+\end{equation}
+\\
+
+\noindent
+{\color{Tan} \textbf{Proof 12: Application of Koyck}}\\
+Given $y_t=\alpha\ +\ \gamma z_t\ +\ \gamma\rho z_{t-1}\ +\ \gamma\rho^2z_{t-2}+\ ...\ +\ \epsilon_t,$, \\ 
+show it is equivant to FDL model of order 1:
+$y_t\ =\ \alpha_0+\gamma z_0\ +\rho y_{t-1}+\epsilon_t\ -\ \rho\epsilon_{t-1}$
+However, if we run OLS on this, we get inconsistent estimates as $y_{t-1}$ is correlated with $\epsilon_{t-1}$.(we can use an instrumental variable and estimate the model with that instead).
+
+
+\newpage
+{\color{RoyalBlue}
+\section{Trending data}}
+\noindent
+\textbf{Trending process:} \\
+A time series whose expected value is an increasing or a decreasing function over time. A natural feature in most time-series data! A special case of \textbf{non-stationary} process.
+\\
+
+
+\noindent
+\color{purple} \boldsymbol{Summary}\\
+\color{black}
+\begin{itemize}
+\item
+when \textbf{deterministic trend} in time series, by detrending, we can get \textbf{trend-stationary} result, and a process that is stationary once the trend is removed, usually implicit that series is \textbf{weakly dependent}. 
+\item
+when \textbf{stotsistic trend} in series, by difference term, we can get \textbf{differencing stationary}
+\item
+Unit root is a kind of non-stationarity. 
+\item
+High-persistent series must be non-stationarity. 
+\item
+Series can be trending but not be highly persistent.
+\item
+\textbf{Spurious regression} could be an issue among deterministic or stochastic trend.
+
+
+
+
+
+
+
+
+\end{itemize}
+
+
+
+\newpage
+{\color{RoyalBlue}
+\subsection{Deterministric Trend}}
+In order to capture 'true' relationship between Y and Z, we can adding \textbf{trend variable}: Detrending y and all explanatory variables by it. Just count data. For example, 
+$$y_t\ =\ \beta_0\ +\beta_1x_{1t}\ +\beta_2x_{2t}\ + \gamma t +\ \epsilon_t,\ t\ =\ 1,2,....T$$
+This equation allow as to control for \textbf{linear trend} that affect $y_t$, but may also be related to trend in $x_{1t}$ and $x_{2t}$.
+\\
+
+After adding trend t, if we had all the assumptions of the classical linear models satisfied, then we can apply test statistics and confidence intervals in the usual way.\\
+
+If assumptions of linearity, no perfect collinearity, and strict exogeneity holds, then without trend variable t can cause bias in estimating $\beta_1$ and $\beta_2$. (we can think trend variable as an \textbf{ommitted variable bias}).\\
+
+However, when \textbf{dependent variable is trending}, we shall care about \textbf{goodness of fit}, i.e. we can still have a high R-square which is very misleading and thus we should not credit the fit result due to $y_t$ trending up or down for reasons we have not explained.
+\\
+
+The time trend t represents our ignorance about omitted factors causing yt to trend up or down. However, we should still be happy with it since we can still fit y to a trend.
+\\
+
+{\color{RoyalBlue}
+\subsubsection{Fitting Linear Trending in Regression }}
+We tend to use linear specification to account for linear trend.
+$$y_t\ =\ \alpha _0\ +\alpha _1t\ +\epsilon _t, \ \   \epsilon_t \sim iid \N\left(0,\ \sigma^2\right)$$
+Then, the expectation is a linear function over time 
+$$E(y_t) = \alpha _0\ +\alpha _1t\ $$, and $\epsilon _t$ represent the \textbf{deviation of the trend}. \\
+By $y_{t-1}\ =\ \alpha_0\ +\alpha_1\left(t\ -1\right)+\epsilon_{t-1}$, We also can show that the \textbf{average change in $y_t$ is $\alpha _1,\ \forall t $}:
+$$E(\Delta y_t) = \alpha _1 $$
+\\
+So from the original equation: $y_t\ =\ \beta_0\ +\beta_1x_{1t}\ +\beta_2x_{2t}\ +\gamma t +\ \epsilon_t,\ $, the $\gamma$ tells us what is the expected trend change in y.
+\\
+
+Also, we can do detrend transformation:
+\noindent
+step1: Fitting linear trend model with \textit{trend component} by:
+$$y_t\ =\ \hat{\alpha _0\ }+\hat{\alpha _1t}\ +\varepsilon _t$$
+\noindent
+step2: get \textbf{detrend component}:
+$$y_t\ast \ =\ y_t\ -\ \hat{\alpha _1t}\ =\ \hat{\alpha _0\ }\ +\varepsilon _t$$
+then, the OLS coefficient on regressor in this detrend series case shall same as the ones in the model with a trend t.
+\\
+
+{\color{RoyalBlue}
+\subsubsection{Fitting Exponential Trending in Regression }}
+Some data are better approximated by exponential trends. Therefore we can use exponential trends whereby for strictly positive variables, we can capture an exponential trend by: $$y_t=\ e^{\beta_0\ +\beta_1t\ +\epsilon_t}$$, 
+
+and the \textbf{natural log follow the linear trend} as $\log\left(y_t\right)=\ \beta_0\ +\beta_1t\ +\epsilon_t$. and 
+$$\Delta\ln\left(y_t\right)\ =\ \ln\left(y_t\right)\ -\ln\left(y_{t-1}\right)$$
+$$E\left(\Delta\ln\left(y_t\ \right)\right)=\ \beta_1$$
+
+But the \textbf{change in log approximates the growth rate:}
+$$\beta_1\approx\frac{\Delta y_t}{y_{t-1}}$$
+Note that with exponentional trend, the \textbf{rate of growth is constant}. From this, $\beta_1$ tells us the \textbf{average growth rate over time}. 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+\newpage
+{\color{RoyalBlue}
+\subsection{Stotistic Trend}}
+An alternative to represent the trending series is to use a \textbf{random walk process} whereby:
+$$y_t = y_{t-1} +\epsilon_t$$
+then,
+$$y_t = y_0 +\epsilon_1 + \epsilon_2 + ...+ \epsilon_T$$
+and $corr\left(y_{t+h},\ y_t\right)\ $ never die out, \textbf{ RW process is high presistent}:
+$$E\left(y_t\right)\ =\ E\left(y_0\right)\ $$
+$$  V\left(y_t\right)\ =\ T\delta _{\epsilon }^2 $$
+$$cov\left(y_t,\ y_{t+s}\right)\ =\ V\left(y_t\right)\ =\ t\delta_{\varepsilon}^2$$
+$$corr\left(y_t,\ y_{t+s}\right)\ =\ \frac{cov\left(y_t,\ y_{t+s}\right)}{\sqrt{V\left(y_t\right)}\sqrt{V\left(y_{t+s}\right)}}=\sqrt{\frac{t}{t+s}}$$
+The varianve of RW process incrases linearily with time. And for sufficiently long time series, this implies that the correlation between $y_t$ and $y_{t+h}$ remains high (close to unity) even as s grows. This is known as highly persistent or strongly dependent time series which \textbf{does not satisfy the LLN or CLT}.
+\\
+
+\noindent
+\textbf{High persistent} series, such as RW, we now have a sequence of random variables which do not disappear even as time moves on. The effects of shocks do not disappear and therefore \textbf{non-stationary}. 
+\\
+
+Do not confused trending and highly persistent. \textbf{Series can be trending but not be highly persistent}. However, often the case that highly persistent also contains a clear trend, such as a \textbf{random walk with drift}:
+$$y_t=\alpha \ +y_{t-1}+\varepsilon _t$$
+
+{\color{RoyalBlue}
+\subsubsection{Regression issue under high persistent series}}
+Highly persistent series such as random walks causes serious problems for regression analysis. If we regress y on x, then we get parameters that are statistically significant even though they are unrelated. Consider
+$$y_t=\beta _0\ +\beta _1x_t+\zeta _t$$
+where \textbf{y and x are random walk process}, s.t,
+$$y_t=y_{t-1}+\varepsilon _t,\ \varepsilon \ \sim iid\left(0,\delta _{\varepsilon }^2\right)$$
+$$x_t=x_{t-1}+\nu _t,\ \nu \ \sim iid\left(0,\delta _{\nu }^2\right)$$
+assume 
+$$corr\left(\nu _t,\ \varepsilon _t\right)\ =\ 0$$
+which mean that y and x are independent process. Then, given also $E(y_t) = 0$, it would suggest that $\beta _0=\beta _1\ =0$, and then 
+$$\zeta _t\ =\ y_{t\ }=\varepsilon _1+\varepsilon _2\ +...+\varepsilon _T$$
+which is mean zero but varince goes with t. 
+
+\noindent
+{\color{ForestGreen}\textbf{Remark: }} 
+\begin{itemize}
+    \item
+    Under the regress with two independent RW process, more generally I(1), Error term is high persistent
+    \item
+    Also the \textbf{OLS estimator $\hat{\beta_1}$ does not converge to zero}, which means that OLS is \textbf{inconsistent}.
+    \item 
+    An even more serious issue is that the t-statistic for H0 : $\hat{\beta_1} = 0 $ does not have a t-distribution, even in large samples, as we get more data, $\hat{\beta_1}$ does not get closer to 0 or even converge to a specific value. Furthermore, the t-statistic rejects the null hypothesis too often and this issue gets worse as sampling size grows (we are more likely to make a type 1 error, rejecting true null, with more data).
+\end{itemize}
+
+As we fail in statistical inference, we will never figure out that yt is unrelated to xt, and thus \textbf{spurious relationship} occur. With RW, the problem arises because {xt} has too much temporal correlations for the law of large numbers to hold.
+\\
+{\color{RoyalBlue}
+\subsection{Spurious regression}}
+
+Spurious regressions can happen in \textbf{deterministic trend, stochastic trend or non-cointegrated I(1) series} (but generally trend data), whereby we think there is a significant correlation and observe high $R^2$ when in fact, the series are independent.
+\\ 
+
+A spurious regression means the relationship specified in the regression does not exist, but the regression output fails to convey this fact.So what happens? OLS estimators are \textbf{not consistent, the t-statistics diverge to infinity} as sample size increases.
+\\
+
+Provied the series are \textit{weakly dependent} about their time trend, the proelm is efficient solved by including a time trend in the regression model. 
+\\
+
+Regressions with two or more independent random walks results in spurious regression problem in time series. The two series are independent but they appear to be strongly related since they could just trend in the same manner. From this spurious regression, the $R^2$ will be quite large and thus invalidated.
+
+
+
+
+\newpage
+{\color{RoyalBlue}
+\section{AutoReressive Model}}
+\noindent
+\color{purple} \boldsymbol{Summary}
+\\
+
+\color{black}
+If a process is I(1), then it has a unit root (so we need to first-difference it to get a I(0) process). By fitting the AR(1) model, we are effectively estimating the unit root parameter, which, first of all, will be biased; but also, we will have inference issues, as the variance will be non-finite.
+\\
+
+So generally, AR(1) model can only be 'correct' model in I(0) case. "Correct" Typically means whether the Gauss-Markov assumptions are (mostly)  satisfied. 
+
+\newpage
+{\color{RoyalBlue}
+\subsection{AR in I(0) case}}
+AR model is a time series regression, in which both the dependent and independent variables belong to the \textbf{same stochastic process}. Then, by \textbf{assuming white noise process in error term}, the simple AR(1) is: 
+$$y_t\ =\ \alpha+\beta y_{t-1}+\varepsilon_t,\ \ \ \varepsilon_{t\ }\sim iid\ \left(0,\sigma_{\varepsilon}^2\right)$$
+where $\beta$ is called \textbf{persistent parameter}. Note that error term is not autocorrelated and iid unlike response variable. 
+\\
+
+We shall have \textbf{high persistent} time series, when $\beta = 1$, it is Random Walk process. By contrast, when $\beta = 0$, $y_t$ then just follow white noise process, no peresistent. 
+\\
+
+\noindent
+{\color{Tan} \textbf{Proof 1: Show persistent in  AR(1) model}}\\
+$$y_t\ =\ \alpha\sum_{i=0}^{t-1}\beta_i+\beta^ty_0+\sum_{i=0}^{t-1}\beta^i\varepsilon_{t-i}$$
+Clearly, we can see if the series is weak persistent depends on if $|\beta| <1$
+\\
+
+\noindent
+{\color{Tan} \textbf{Proof 2: Show weak persistent AR(1) model converge form}}\\
+$$y_t\ =\ \frac{\alpha}{1-\beta}+\sum_{i=0}^{t-1}\beta^i\varepsilon_{t-i}$$
+\\
+
+\noindent
+{\color{Tan} \textbf{Proof 3: Show unconditional mean, variance in weak persistent AR(1)}}\\
+\textbf{Unconditional Mean: }$E\left(y_t\right)\ =\ \frac{\alpha}{1-\beta}\ =\mu$ \\
+\textbf{Unconditional VAriance: }$E\left(y_t\right)\ =\ \frac{\sigma_{\varepsilon}^2}{1-\beta^2}\ =\gamma_0$\\
+\textbf{Autocorrelation:} $\rho_k=\beta^k$
+\\
+
+Thus, $y_t$ is stationary, so time in-variant, but RW process is non-stationary as its mean/variance never converge. 
+\\
+
+\noindent
+The \textbf{Autocovariance in AR(1)} by defination is:
+$$\gamma_{k\ }=cov\left(y_t,\ y_{t-k}\right)\ =E\left(y_t,\ y_{t-k}\right)\ -\mu^2$$
+Back to AR(1) model:
+$$E\left(y_{t\ }y_{t-k}\right)=\alpha \mu \ +\ \beta E\left(\beta y_{t-1}y_{t-k}\right)$$
+\noindent
+{\color{Tan} \textbf{Proof 4:}}\\
+$$\gamma _k\ =\ \beta \gamma _{k-1}$$
+and thus, the \textbf{autocorreation of AR(1)} is:
+$$\rho _k=\frac{\gamma _k}{\gamma _0}=\beta \frac{\gamma _{k-1}}{\gamma _0}=\beta \rho _{k-1}$$
+It follows that:
+$$\rho _0=\frac{\gamma _0}{\gamma _0}\ =1,\ \rho _1=\beta \rho _0=\beta ,\ \rho_2=\beta^2\rho_0=\beta^2,\ \rho_k=\beta^k\rho_0=\beta^k$$
+That is, the autocorrelation of AR(1) is \textbf{geometric decay}. The smaller $|\beta|$ is , more rapid decay. \textbf{ACF plot}
+\\
+
+The optimal lag selection is based on \textbf{Information criteria}. The model with mini AIC/BIC is perferred. BIC selects might less parameters than AIC, but can also give same selection result. Relative value (not absolute) of the criteria matter. Also need to test for serial correlation of selected model.
+\\
+
+
+
+{\color{RoyalBlue}
+\subsection{AR fail in I(1) case}}
+Weakly dependent processes are said to be integrated of order zero or I(0). Therefore, we don’t need to do anything to them before regressions since they satisfy standard limit theorems. 
+\\
+By constrast, \textbf{Unit root} processes like random walks are integrated of order one or I(1). This means that first differencing them will lead to a weakly dependent series (and often stationary process). It can be think as a \textbf{stotistic trend} in time series. Therefore, a time series that is I(1) is said to be a difference stationary process. Unit roots means that \textbf{the effects of any shocks do not disappear over time} (which is the opposite of weakly dependent).
+
+\textbf{unit root is nonstationary but inverse is false, and RW is a special case of unit root}, as we can get stationary after first order difference. \\
+
+To elaborate more on unit roots, we can think of them as a stochastic trend in time series. If we had a time series of:
+$$y_t = \alpha_0 + \alpha_1 y_{t−1} + \epsilon_t$$
+the coefficient $\alpha_1$ is a \textbf{root}. We expect this process to always converge back to the value of $\alpha_0$ when absolute value of $\alpha_1 <1$. If we set $\alpha_0 = 0$ and $\alpha_1=0.5$ ,if yesterday was 100,then today it’s 50, tomorrow 25, and so on until it gets to 0. Here, we can see that this series will \textbf{converge back} to $\alpha_0$. However, if we had a root that is a unit, or in other words, when $\alpha_1=1$, we see that the series will never converge back. From this, we can see that the time series will never recover back to its expected value and therefore the process is very susceptible to shocks and hard to predict. 
+\\
+
+{\color{RoyalBlue}
+\subsubsection{AR(1) model for unit root test}}
+A time sereis with an unit root means that any\testbf{shock} does not disappear over time, as the geometric series divergent, it cannot converge back to initial state before the shock. I,e. Non-stationary, as no fixed structure.
+\\
+
+Looking at the unit root tell us whether the time series is stationary. If does not have unit root ,it is stationary I(0), so based on AR(1) model:
+\begin{equation}
+    y_t = \beta y_{t-1} +\epsilon_t
+\end{equation}
+and H0: $\beta = 1$ (unit root, not stationary), reject H0 means stationary. But we \textbf{cannot use usual t-stat as data is not stationary} (Weak dependent of error term is necessary for CLT holds).
+\\
+
+{\color{RoyalBlue}
+\subsubsection{Dickey Fuller Test for a unit root}}
+Dickery Fuller distribution is an \textbf{asymptotic distribution of t-statistic under null of one unit root}.
+$$ y_t = \rho y_{t-1} +\epsilon_t, \  $$
+$$ y_t - y_{t-1}= \rho y_{t-1} - y_{t-1} +\epsilon_t, \  $$
+$$\Delta{y_t} = (\rho -1) y_{t-1} + \epsilon_t $$
+Let $\theta = (\rho -1)$, then $\Delta{y_t} =\theta y_{t-1} + \epsilon_t $
+\\
+
+H0: $\theta = 0 $, and we shall use the \textbf{Dickery Fuller distribution table} for the critical value. If no time trend:
+$$\Delta y_t=\alpha\ +\gamma y_{t-1}+\varepsilon_t$$
+We also has Dickery Fuller distribution table \textbf{with time trend}, so that a \textbf{trend-stationary process is not mistaken for a unit root process}. $$\Delta y_t=\alpha\ +\ \delta t\ +\gamma y_{t-1}+\varepsilon_t$$
+Then under the \textbf{alternative $y_t$ is a trend-stationary process}. 
+\\
+
+Dickery Fuller test based on the \textbf{assumption that $\epsilon_t$ is white noise}(i.e. serial uncorrelated), otherwise the serial correlation must be account for by AR(p) process, before unit root test. This result in the \textbf{Argumented Dickey Fuller test}:
+$$\Delta y_t=\alpha\ +\ \delta t\ +\gamma y_{t-1}+\theta_1\Delta y_{t-1}+...+\theta_p\Delta y_{t-p}+\varepsilon_t$$
+The distribution not affected by additional of the lagged differences, and thus the cirtical values can be applied before.
+\\
+
+In sum, we can have \textbf{three versions of Dickey fuller test}:
+\begin{enumerate}
+\item $\Delta y_t=\rho y_{t-1}+\varepsilon_t$ (Test for Unit root)
+\item $\Delta y_t=\rho y_{t-1}+\alpha+\varepsilon_t$ (Unit root +draft)
+\item $\Delta y_t=\rho y_{t-1}+\alpha+\gamma t+\ \varepsilon_t$ (Unit root + draft + deterministic time trend)
+\end{enumerate}
+Each version of the test has its own critical value. The intuition behind the test is as follows. If the series y is stationary (or trend stationary), then it has a tendency to return to a constant (or deterministically trending) mean. Therefore, large values will tend to be followed by smaller values (negative changes), and small values by larger values (positive changes). 
+\\
+
+\noindent
+{\color{ForestGreen}\textbf{Remark: }} 
+\begin{itemize}
+\item
+Serial correlation must be account for (by AR(p) process), before unit root test.
+\item
+High-persistent series imply non-stationarity, and the inverse not true.
+\item
+Series can has trend, but also weakly persistent. Example is \textbf{trend-stationary processes}. 
+\item
+A random walk with drift is an example of a highly persistent series that is trending.
+\end{itemize}
+
+
+\newpage
+{\color{RoyalBlue}
+\section{Vector Auto-Regressive Model}}
+{\color{RoyalBlue}
+\subsection{Structural AR model}}
+Recall:
+Given $\{y_t\}$ and $\{z_t\}$ are two \textbf{weakly dependent} time sereis. (i.e. I(0), but not iid sequence )
+We define the \textit{static relationship} by: 
+$$y_t\ =\ \alpha\ +\ \beta z_t\ +\ \varepsilon_t,\  \varepsilon_t\  iid (0, \sigma^2)$$
+Note that if $\{y_t\}$ and $\{z_t\}$ are two I(1) process, then without cointegration, error term still I(1).\\
+
+Also \textit{FDL model} possile:
+$$ y_{t\ }=\alpha_0+\delta_0z_t\ +\ \delta_1z_{t-1\ }+\delta_2z_{t-2\ }\ +...+\delta_qz_{t-q\ }+\epsilon_t $$
+when lag order is 2, it means that a change in z today, can affect y up to two period in the future. 
+\\
+
+\noindent
+If error terms are autocorrelated,  $\epsilon_t\ =\ \rho\epsilon_{_{t-1}}+\ \upsilon_t $, we can add lags of dependent variables in order to remove this autocorrelation by build \textbf{Structural AR model}
+\\
+\noindent
+{\color{Tan} \textbf{Proof 10: adjust serial correlation in static model}}
+\begin{equation}
+\tilde{y_t}\ =\ \tilde{\alpha _0}\ + \tilde{\alpha _1}y_{t-1}+\ \tilde{\beta _0}z_t\ + \tilde{\beta _1}z_{t-1}\ +\ v_t,
+\end{equation}
+Where $\tilde{\alpha_1} = \rho$. 
+Note that we have \textit{immediately effect} when $z_t$ in model and $\beta_0 \ne 0$. In this model, we \textbf{assume white noise error term}, also note that it can be written by quasi-difference form as. 
+\\
+
+Now, the parameteres in new model are different with the static model ($\tilde{\beta _0}$ is same as the static model, but now, we do have more estimated parameters). So if our model should be static, we have the issue is that now the parameters we have constructed are different to the static model. 
+\\
+
+From this, we think a model that assuming \textbf{no immediate effect}, which means that $z_t$ disappears. and We can think of a \textbf{feedback effect} whereby z can affect y BUT then y can also affect z. We can write 2 equations affecting y and z. We have the same variables on the RHS of both equations but the parameters differ. 
+\\
+
+
+{\color{RoyalBlue}
+\subsection{VAR model}}
+\textbf{Assuming all series are weakly dependent!}, which mean that they are not really persistent whereby any shocks disappears reasonably quickly. Since both of them are weakly dependent, they are \textbf{I(0) and therefore not suffer from spurious regression}.  Also \textbf{endogenous variable assumption/ no pure exogenous variables} as the regressors are lags of all the variables. and \textbf{no current endogenous variables} 
+\\
+
+VAR is the \textit{multivariate generalizition of an AR model}, whereby instead of 1 dependent variable, we now have \textbf{m endogenous dependent variables} (since we now have this feedback effect). The simplest \textbf{reduced form VAR} (reduced form because we do not innclude regressor at the same time period) example (bivariate VAR(1) model):\\
+\begin{equation}
+\left[\begin{matrix}x_{1,t}\\x_{2,t}\end{matrix}\right]\ =\left[\ \begin{matrix}\alpha_{1,0}\\\alpha_{2,0}\end{matrix}\right]\ +\left[\ \begin{matrix}\alpha_{1,1}\\\alpha_{2,1}\end{matrix}\right]\left[\begin{matrix}x_{1,t-1}\\x_{2,t-2}\end{matrix}\right]\ +\left[\ \begin{matrix}\alpha_{1,2}\\\alpha_{2,2}\end{matrix}\right]\left[\begin{matrix}x_{2,t-1}\\x_{1,t-2}\end{matrix}\right]\ +\left[\ \begin{matrix}\nu_1\\\nu_2\end{matrix}\right]\ 
+\end{equation}
+Simplify:
+\begin{equation}
+\left[\begin{matrix}x_{1,t}\\x_{2,t}\end{matrix}\right]\ =\left[\ \begin{matrix}\alpha_{1,0}\\\alpha_{2,0}\end{matrix}\right]\ +\left[\ \begin{matrix}\alpha_{1,1}&\alpha_{1,2}\\\alpha_{2,1}&\alpha_{2,2}\end{matrix}\right]\left[\begin{matrix}x_{1,t-1}\\x_{2,t-2}\end{matrix}\right]\ \ +\left[\ \begin{matrix}\nu_1\\\nu_2\end{matrix}\right]\ 
+\end{equation}
+where
+\begin{equation}
+v_{t\ }\ =\ \left[\ \begin{matrix}\nu_1\\\nu_2\end{matrix}\right]\ ,\ v_{t\ }\sim iid\left(0,\ \Sigma\right),\ \Sigma\ =\left[\begin{matrix}\sigma_1^2&cov\left(\nu_1,\ \nu_2\right)\\cov\left(\nu_1,\ \nu_2\right)&\sigma_2^2\end{matrix}\right]
+\end{equation}
+
+\noindent
+Note that $\nu_{1\ }$ DIFFER $\nu_2$, and the \textbf{error covariance matrix} allows $cov\left(\nu _1,\ \nu _2\right) \ne 0$. \textbf{Each error term in each equation is assumed to be iid relative to own future and past realisation BUT may be correlated between equations.}
+\\
+
+More precisely, it is a \textit{reduced form of simultaneous equations}(no $z_t$) with a very free dynamic specification, such that \textit{no causal linages are imposed a prior}: As $y_t$ equation doesnot have $z_t$ inside of it anymore. So we can now estimate it (\textbf{no simultaneous equation bias}). So hence, what we can do with our bivariate VAR(1) model that we have, is run 2 OLS regression and hence we get our parameter estimates. However, we may have the case of autocorrelation between the models. both GLS and OLS estimators will be \textbf{unbiased}.
+
+The general form  \textbf{n-VAR(p)} model:\\
+\begin{equation}
+x_t\ =\ \alpha \ +\Pi _1x_{t-1}\ +\ \Pi _2x_{t-2}\ +\ ...+\ \Pi _px_{t-p}+\varepsilon _t,\ \varepsilon _t\sim iid\left(0,\Sigma \right)
+\end{equation}
+where $x_t$ is n*1 vector at time t, $\Pi$ matrix is \textbf{n*n}, and the off-diagnal elememts can be nonzero. $\Pi$ is n*n size as for each time period, n variables can have feadback effect with each other.
+\\
+
+So if we set the effect from all other variables to 0, then we are left with an AR model. We can have n variables and believe that some variables affect the other variables. Since there is no current endogenous variables on the RHS of equations, the specification in reduced form gives us a model that \textbf{does not impose any restrictions} ahead of time. Also, because the set of regressors is the same for each equations, the AVR model can be \textbf{efficiently estimated by OLS}.
+\\
+
+The lag selection in VAR, we do penalty on $(p n^2 +n)$, as both the number of equation and lag order complex the model.(formula see p8 ppt). 
+\\
+
+To summarise, in VAR, we select  the optimal order of p by information criteria, and select the number of equation (the number of endogenous variables, based on Granger Causality test).
+\\
+
+{\color{RoyalBlue}
+\subsection{Granger Causality method for Prediction: }}
+The VAR model allows to test whether any given variable in the system causes another variable.\\
+
+\noindent
+Motivation: Is VAR better than AR? (Or are multi-variate time series models are better choice than univariate one ? ) or Does the new variable Z does help to predict Y? To address the question of \textit{the usefulness of one or a set of additional variable } for predicting Y or a set of targets.\\
+
+Structural AR model requires a restriction on the right hand side. We can just use OLS but if variables are different, then we have to use MLE. To identify the system, it means that if we have 2 endogenous variables with 2 equations so direction of causality may be hard to identify so this structural model will allow us to identify the causality via restrictions made.
+\\
+
+Based on the premise that the \textit{future cannot cause past}, so we can easily check if past cause future, with and without additioal variable. As such, Granger causality \textbf{addresses the question of usefulness of one variable (or a set of variables) for predicting another variable (or a set of variables)}. We say Z does Granger causes Y (or Z is useful, in addition to past y, to predict y) if:
+\begin{equation}
+    E(y_t|I_{y,z,t-1}) \ne E(y_t|I_{y,t-1})
+\end{equation}, where $I_{y,z}$ is the \textit{information set} containing all \textbf{past} value of y and z (and any deterministic components), while $I_{y}$ does not contain the past infor of z.\\
+
+From this,  If only one lag of z in equation, We do \textbf{two side t-test for $z_{t-1}$} in granger causality method. \textbf{H0: z doesnot granger cause Y}. Critical value is from t-distribution with degree of freedom = number of obs - number of estimated parameter (non-intercept) - 1(intercept). If we have no less than two lags of z in equation $Z_{t-1}$, $Z_{t-2}$, .. , then we do \textbf{F test} for joint significance of $Z_{t-1}$, $Z_{t-2}$... 
+\\
+
+The term “causes” should be interpreted with caution. The only sense in which z “causes” y is given in the formula above. In particular, it has NOTHING to say about '\textbf{contemporaneous causality}' between y and z, so it does not allow us to determine whether $z_t$ is an \textit{exogenous} or \textit{endogenous} variable in an equation relating $y_t$ to $z_t$, as the formula above has nothing to the about the relationship of y and z in the same period. 
+\\
+
+Note that \textbf{Granger causality method} $\ne$ \textbf{Eager-granger method}: Granger causality is selected to 'forecast', while Eager-granger is explain if 'cointegration'. \\
+
+
+
+\newpage
+{\color{RoyalBlue}
+\section{Serial correlation of error term}}
+\noindent
+\textbf{Assumption 3: Extrictly exogeneity}
+We have the case that there is no correlation or relationship between the error term and the explanatory variables for all of time.\\
+\begin{equation}
+E(\epsilon_t | \textbf{X}) = 0, \forall t  \\
+\end{equation}
+where X passes though all time period, both past and future.
+\\
+
+\noindent
+\textbf{Assumption 5: No Autocorrelation:}
+The error terms are uncorrelated over time.
+\begin{equation}
+Cov(\epsilon_t, \epsilon_s|\textbf{X}) = 0, \forall t \ne s
+\end{equation}
+
+\\
+
+\noindent
+{\color{DarkOrchid}
+\textbf{Violation of the white noise assumption:}}
+\begin{itemize}
+\item
+Recall if linearity, no perfect collinearity and strictly exogenous, then OLS is unbiased.
+\item
+The violation of the assumption that errors are uncorrelated over time will not (directly) affect unbiasedness or consistency of least squares. But \textbf{less efficient}! Because the Gauss-Markov Theorem requires serially uncorrelated errors, OLS is \textbf{no longer BLUE} in the presence of serial correlation.
+\item 
+Autocorrelated errors (serial correlation) means that the \textbf{usual statistical inference unreliable}, even in the case of large samples. No efficient. Using the usual OLS standard error in the presence of serial correlation is invalid.
+\item
+Sereal correlation may \textbf{invalidate R square} or adjusted R square measures. If it is a result of \textbf{spurious regression} because y and
+(some of the) x have \textbf{unit roots}.
+\item
+But \textbf{R square are reliable in serial correlation case} if the data are \textbf{weakly dependent}.
+I.e. serial correlation itself does not invalidate R-squared. In fact, if the data are \textbf{stationary and weakly dependent}/
+
+\item
+If the explanatory variables are \textit{contemporaneously exogenous and weakly dependent}, then OLS is still consistent (not necessarily unbiased).
+\end{itemize}
+
+{\color{RoyalBlue}
+\subsection{Testing for Serial Correlation}}
+
+We specify simple alternative models that allow the errors to be serially correlated and use the model to test the null that the errors are not serially correlated. From this, we can derive the \textbf{first-order autocorrelation / AR(1) serial correlation model}:
+
+\begin{equation}
+\epsilon_t\ =\ \rho\epsilon_{_{t-1}}+\ \upsilon_t,\ \upsilon_t \ \ iid (0,\sigma^2)
+\end{equation}
+\noindent
+So that if $\rho = 0 $, then that means the error term is just iid. The error term is a function of its own lag. We don’t include an intercept due to zero conditional mean. \\
+
+\noindent
+We can think of this as seeing whether does the previous error term have a relationship/effect on the current error term. If it does $\rho \ne 0 $), then there is autocorrelation as the error terms are related (correlated). The null hypothesis of this is that there is no serial correlation such that\\
+\textbf{H0: $\rho = 0 $, errors are not serially correlated}\\
+Often though, $\rho > 0 $, when there is serial correlation but we still use a two-sided alternative.
+\\
+
+\noindent
+However, in practice, we \textbf{can not t actually observe error terms so we instead use the OLS residual $\hat{\epsilon}$}. 
+\\
+
+\noindent
+{\color{RoyalBlue}
+\subsubsection{T-Test for AR(1) serial correlation under strict exogeneity:}}
+\noindent
+If the \textbf{explanatory variables are strictly exogenous}, we can use a simple \textbf{t-test} for H0: $\rho = 0$. 
+\\
+
+\begin{enumerate}
+\item Set up a time series model and run the regression:
+$$y_{t\ }=\ \beta 'x_t\ +\epsilon _t$$
+where t = 1,2,3 ...T, and $\beta$ is vector and x is also vector in multi-variate case.
+\item \textbf{First-order correlation: }Using the residuals from step 1, run the regression
+$$\hat\epsilon_t\ =\ \rho\hat\epsilon_{_{t-1}}+\ \upsilon_t$$
+where t = 2,3,4... (lost the first observation), and $\upsilon_t$ is white noise iid. If we do not reject H0: $\rho = 0$, and then $\upsilon_t = \epsilon _t$
+\item Compute the \textbf{t-statistic} for $\hat{\rho}$ and test whether H0: $\rho = 0$. Therefore if we reject, there is autocorrelation with the error terms and we cannot do inferences.
+\end{enumerate}
+
+\noindent
+{\color{ForestGreen}\textbf{Remark: }} 
+\begin{itemize}
+\item 
+The test mentioned has \textbf{large-sample justifications} and tends to work well. 
+Standard errors are wider if small time period T, and therefore we might not reject even if $\hat{\rho}$ is ”large” since there is a lot of room for error. 
+And Standard errors are smaller if large time period T, so much more likely to reject $\hat{\rho}$ even if its small. This is due to the fact that the \textbf{practical significance is nothing to do with the statistical significance}. It may be the case that for a large sample size, we just happened to have found some correlation (and therefore since sample size is large, it’s easy to reject things). 
+\item
+Note that we must assume \textbf{homoskedasticity} for this test, if heteroskedasticity, then we use \textbf{robust t-statistics} (these are smaller standard errors so it is harder to reject).
+\item
+we can actually use the usual t-test as long as $E(\epsilon_t|x_t,x_{t+1}) = 0$ in AR(1) serial correlation case. (i.e. the error in a given time period is uncorrelated with regressors contemporaneously and in the next time period.) If we have higher order serial correlation, still need strict exogennous assumption. 
+\end{itemize}
+\noindent
+
+{\color{RoyalBlue}
+\subsubsection{F-Test for AR(p) serial correlation under strict exogeneity:}}
+If we find $\upsilon_t$ is not white noise in AR(1) process (i.e. higher order correlation exists), we shall consider \textbf{AR(p) for serial correlation}. In step two, 
+$$\hat{\epsilon}_t\ =\ \rho_1\hat{\epsilon}_{_{t-1}}+\ \rho_2\hat{\epsilon}_{_{t-2}}+\ ...\ +\ \rho_q\hat{\epsilon}_{_{t-q}}+\ \upsilon_t$$
+where t = \textbf{q+1}, q+2, ..... (we had to loss q observations!)
+\\
+Then, in step three, we compute the F test for joint significance of $\epsilon_{t-1}, \epsilon_{t-2},,,,\epsilon_{t-q} $, use \textbf{F statistic} to test the joint hypothesis that\\
+H0: $\rho_1 = \rho_2 =... = 0$, reject H0 means \textbf{jointly statistically significant}. 
+\\
+
+The test require homoskedasticity asumption, otherwise, a heteroskedasticity-robust version can be applied. 
+\\
+
+Note that if we are using just a single lagged residual, we lose one observations since if we had 100 observations, we can only take 99 lag variables and therefore we can’t test it on one observation so we drop that observation.
+\\
+
+{\color{RoyalBlue}
+\subsubsection{Breusche-Godfrey Test under weak exogeneity:}}
+
+When \textbf{weak exogeneity} happen the $\hat{\rho}$ in previous formula is biased, and we need to correct it. A simple adjustment is to consider these \textit{endogenous regressors} when testing for serial correlation.
+\\
+
+What we can do is to include all of the explanatory variables from step 1 to the residual autocorrelation regression in step 2 and then run the \textbf{F-statistic} again. Note we \textbf{include the intercept $\gamma_0$}:
+\begin{equation}
+    \hat{\epsilon}_t\ =\ \rho_1\hat{\epsilon}_{_{t-1}}+\ \rho_2\hat{\epsilon}_{_{t-2}}+\ ...\ +\ \rho_q\hat{\epsilon}_{_{t-q}}+\ \gamma_0\ +\ \gamma_1z_{1,t}\ +\gamma_2z_{2,t}\ +...+\gamma_jz_{1,j}
+\end{equation}
+Then, in step three, we use \textbf{F statistic} that \\
+H0: $\rho_1 = \rho_2 =... = 0$
+\\
+F test by Lagrange multiplier form for statistic. \textbf{LM statistic:}
+$$LM = (n-q)R^2$$
+where $R^2$ is just usual R-squared from regression. Under H0, LM follow Chi-suqare dist with q d.f. It also can be made robust to heteroskedasticity
+\textbf{Note that we definitely incorporate an intercept here}, this test called \textbf{Breusche-Godfrey Test for $q^{th}$ order residuals}
+\\
+
+
+
+{\color{RoyalBlue}
+\subsection{Correcting Serial Correlation}}
+Let us suppose we know model suffers from serial correlation, although the estimate is still unbiased and consistent, but \textbf{inefficiency/ not BLUE}, as a result, our standard errors will be off meaning that we can no longer carry out inferences. From that, we should correct the serial correlation.
+\\
+
+{\color{RoyalBlue}
+\subsubsection{AR(1) serial correlation with static model:}}
+Assume we have a linear regression with serially correlated errors and strict exogeneity assumption holds:
+$$y_t\ =\beta_0\ +\ \beta_1x_t\ +\epsilon_t,\ t\ =\ 1,2,\ ..\ T$$
+$$\epsilon_t\ =\ \rho\epsilon_{_{t-1}}+\ \upsilon_t, \ \upsilon_t \ iid(o,\sigma^2)$$
+and $\epsilon_t $ and $\upsilon_t$ are assumped to be \textbf{independent error process}. Assume error follow AR(1) process. 
+\\
+Then,
+\begin{equation}
+\tilde{y_t} = \tilde{\beta_0}+ \beta_1 \tilde{x_t} + \tilde{\upsilon_t}, \ \  \upsilon_t \sim iid\left(0,\sigma_{\upsilon}^2\right),\ \ t = 2,3,..T 
+\end{equation}
+This equation \textbf{satisfied all Causs-Markov assumptions}. Note that we lost one obs here. and $\tilde{y_t}$, $\tilde{x_t}$ are called \textbf{quasi-difference variables} 
+\\
+
+\noindent
+{\color{Tan} \textbf{Proof 9}}\\
+$$\tilde{y_t} = y_t - \rho y_{t-1} $$ $$\tilde{x_t} = x_t - \rho x_{t-1} ,\ (t = 1,2 ,...,T)$$
+$$\tilde{y_t} = \tilde{\beta_0} + \beta_1 \tilde{x_t} + \tilde{\epsilon_t} , \ (t = 2,3,...,T)$$
+$$\tilde{\beta_0} = (1-\rho) \beta_0$$
+$$\upsilon_t \sim iid\left(0,\sigma_{\upsilon}^2\right) $$
+\\
+
+Note that if $\rho = 1 $, we have then just differenced it (not quasi), but we assumed that its absolute vakue less than 1 . Also, note that this only works for the observations from 2,...,t, since we cannot difference the first period. Therefore, for estimators to be \textbf{BLUE}, we need to specify that the first time period is simply:
+$$y_1=\beta_0\ +\ \beta_1x_1\ +\epsilon_1$$
+and all the $ corr(\upsilon_t, \epsilon_1) = 0, \forall t $. 
+\\
+
+
+
+{\color{RoyalBlue}
+\subsubsection{Cochrane-Orcutt Correcting Serial Correlation (Feasible GLS)}}
+\begin{enumerate}
+\item
+Regress $y_t$ on $x_t$ and obtain the residuals $\hat{\epsilon}$
+$$y_1=\beta_0\ +\ \beta_1x_1\ +\epsilon_1, \ t = 1,2,3....T$$
+\item
+Regress $\hat{\epsilon_t}$ on $\hat{\epsilon_{t-1}}$ and obtain $\hat{\rho}$
+$$\hat{\epsilon_t}\ =\ \rho \hat{\epsilon_{t-1}}+\ \upsilon_t $$
+\item
+From \textbf{quasi-differenced variables}, we regress \tilde{y_t} on \tilde{x_t}̃ to obtain parameter estimates
+$$ \tilde{y_t} = \tilde{\beta_0} + \beta_1 \tilde{x_t} + \tilde{\epsilon_t} , \ (t = 2,3,...,T) $$
+\end{enumerate}
+
+
+\noindent
+{\color{ForestGreen}\textbf{Remark: }} 
+\begin{itemize}
+\item 
+The \textbf{usual standard errors, t statistics, F statistics} are now \textbf{asymptotically valid}.
+\item
+The cost of using $\hat{\rho}$ in place of $\rho$ is that the estimator is \textbf{baised}, however, it is \textbf{asymptotically more efficient} (assuming the time series are weakly dependent) and consistent. $\hat{\rho}$ is \textbf{consistent} estimator of $\rho$, since the whole procedure results in a \textbf{feasible GLS}. The FGLS is biased, but consistent. In other words, we give up the unibased property, to get the estimator is asumptotically more efficient than OLS. 
+\item
+By FGLS, our \textbf{standard error will be corrected and larger}, make inference valid.
+\item
+Note that , in Cochrane-Orcutt procedure, we need \textbf{strictly exogenous}, while OLS only need weakly exogenous to be consistent.  
+\item
+In practice the Cochrane-Orcutt procedure is an iterative procedure, and steps (2) and (3) are executed repeatedly to derive new parameter estimates until there is no change in the estimate of $\rho$ obtained from successive iterations.
+\item
+More importantly, we may notice that these the Cochrane-Orcutt method may result in coefficents that do not differ too much from OLS, BUT the standard errors can be significantly higher to account for the serial correlation (That is the good news and what we want from CO procedure).
+\item
+Note that we \textbf{cannot compare the $R^2$} of CO result with the OLS models since the dependent and independent variables are now different.
+\end{itemize}
+
+
+\noindent
+{\color{RoyalBlue}
+\subsubsection{AR(1) serial correlation in FDL(1) model:}}
+$$y_{t\ }=\ \alpha\ +\beta z_{t-1}+\epsilon_t$$
+$$\epsilon_t\ =\ \rho\epsilon_{t-1}+\nu_t$$
+Combine them, we get
+$$y_t\ =\ \left(1-\rho\right)\alpha\ +\rho y_{t-1}+\beta z_{t-1}-\beta\rho z_{t-2}+\upsilon_t$$
+The combined model with a lag of z and AR(1) serial correction is a \textbf{special case of a general model}
+$$y_t\ =\ \delta\ +\rho y_{t-1}+\gamma_1z_{t-1}+\gamma_2z_{t-2}+\upsilon_t$$
+where $\delta \ =\ \left(1-\rho \right)\alpha ,\ \ \gamma _1\ =\ \beta ,\ \ \gamma _2\ =-\beta \rho $, and the coefficient of $y_{t-1}$ is same (we have said that the serial correlation does not cause bias of inconsistnet here, but less effiecient, OLS estimator not BLUE). Also find that $\gamma _2$ is entirely determined by $\beta$ and $\rho$. 
+\\
+
+For forecasting, the AR(1) serial correlation model may be too \textbf{restrictive}. As it may impose restrictions on the parameters that are not met. On the other hand, if the AR(1) serial correlation model holds, it captures the conditional mean $E(y_t|I_{t-1})$ with one fewer parameter than the general model; i.e. AR(1) is more \textbf{parsimonious} than the general model (AR(1) is suggested). AR(1) is more parsimonious than general model here means: given the same explanatory power (they have same regressors), It requires less parameters to estimate ($\beta$ and $\rho$ only), compared with general model ($\rho$, $\gamma_1$, $\gamma_2$) , note that we ignore the intercept term here, as it is just a darft. Intuitively, less estimated parameter is always better, as less estimation, less error we may occur (also less assumtptions needed). And can help to avoid overfitting issue.  It is related to \textbf{Occam's razor} (the less/least speculation is usually better. Another way of saying it is that the more assumptions you have to make, the more unlikely an explanation.)
+\\
+
+
+
+\newpage
+{\color{RoyalBlue}
+\section{Cointegration and Error Correction Model}}
+
+{\color{RoyalBlue}
+\subsection{Cointegration}}
+
+\noindent
+\textbf{Cointegration: } when two (or more) \textbf{I(1) series}, but linear combination is I(0). In Econometric, Cointegration means \textbf{Long term equilibrium/co-move in the long run} exists! In such case, we say y and z are \textit{integrated}, i.e they do have a specific relationship, related to regularity in the long run. 
+\\
+
+Thus, the idea of test is: if we can find this $\beta$, s.t. $\eta_{t}$ is I(0)? Since if y and z cannot be cointegrated, then it is impossible to find a stationary process for the error term. 
+\\
+
+\textbf{Do not confuse it with Spurious} case. Recall, the spurious series is when two unit root series are \textbf{independent}, but the regression of one on another yield statistical significant result (the standard inference fail in I(1) case). However, in Cointegration case, the regression of one on another is not spurious,but instead tells us something about the \textbf{Long-run relationship}. 
+\\
+
+Also Note that we get inconsistent estimator if both $y_t$ and $x_t$ are IID random walk process. In fact, we cannot even know the distribution of estimator. However, we now can obtain a \textbf{consistent} estimator if those random walk processes time series are cointegrated.
+\\
+
+Suppose ${y_t}$ and ${z_t}$ are two \textbf{I(1)} time series, given by:
+\begin{equation}
+    y_t = y_{t-1} +\epsilon_t, \epsilon_t\sim iid (0, \sigma_\epsilon^2)
+\end{equation}
+\begin{equation}
+    z_t = z_{t-1} +\nu_t, \nu_t\sim iid (0, \sigma_\nu^2)
+\end{equation}
+$\epsilon_t$,$\nu_t$ are white noise process, generally, if no linear relationship, any \textbf{linear combination} bet them are still \textbf{I(1)}. Note that it just say \textbf{'linear combination', does not imply independent}, as they also can have non linear relationship. 
+\\
+
+But, in some cases, we can find a slope $\beta$, s.t. $y_t - \beta z_t$ can come to I(0), white noise process. 
+\\
+
+For example, when $\beta = 1$, two RW process are cointegrated if y - z come to I(0), that is, a linear combination of the two RW processes has a \textbf{tendency of returning to zero} with some regulairty.
+\\
+
+{\color{RoyalBlue}
+\subsection{EngleSX Granger test for Cointegrtation: }}
+
+Recall that if $\{y_t\}$ and $\{z_t\}$ are two I(1) process, then in static model without cointegration, error term still I(1). Thus, Cointegration thus similar with Dickey-Fuller test on residuals from static model, but these two tests do has different critical value. as the Granger test account for estimation of the \textbf{cointegration parameter} and we use the \textbf{Asymptotic cirtical value for cointegration test}. 
+\\
+
+\noindent
+H0: Z and Y has are no co-integrated. i.e. Regression residual is I(1).
+\\
+H1: Z and Y has are co-integrated. i.e. residual can be I(0), there is long run relationship between them.
+\begin{equation}
+    y_t = \alpha + \beta z_t + \eta_t
+\end{equation}
+\noindent
+\begin{enumerate}
+\item
+Regress y on z ($\hat{\beta}$ here is consistent with $\beta$ if cointegrated). Otherwise, we need to be careful with the standard error of beta because we haven’t met the condition of strict exogeneity. So the beta would be consistent but t-statistic may not be correct. 
+\item Get the residuals of this estimated static model.
+\item Check the unit root in the residuals and use the asymptotic critical value for cointegration test. (Note that donot use Dickey-fuller distribution, shall use cointegration table instead)
+\\
+\end{enumerate}
+
+{\color{RoyalBlue}
+\subsection{Error Correction Model for Cointegration}}
+
+The Cointegration between two series implies \textit{error correction model}.\\
+
+Let $\gamma$ be the \textbf{adjustment parameter} and $\gamma < 0 $, the larger of the absolute value of $\gamma$, the faster to the adjustment long run equilibrium. 
+\\
+
+Let the cointegrating relationship  bet the \textbf{two I(1) series} is 
+\begin{equation}
+    \eta_t = y_t - \alpha - \beta z_t  
+\end{equation}
+Note that it just the formula in Granger test, where $\eta_t$ is I(0), stationary. \\
+In short run, the error correction model is: 
+\begin{equation}
+    \Delta y_t\ =\ \delta\ +\ \theta\Delta z_t\ +\ \gamma\ \eta_{t-1}\ +\epsilon_t  
+\end{equation}
+We can also incorporate the dynamic properties of relationship:
+$$\Delta y_t\ =\ \delta\ +\ \theta_1\Delta z_t\ +\ \theta_2\Delta z_{t-1}\ +\ \gamma\ \eta_{t-1}\ +\epsilon_t$$
+\noindent where $ \gamma\eta_{t-1}$ is the \textbf{error correction term}, which is \textbf{stationary} (by construction ,unless it is not, in which case we don't have cointegration) and lead the result show long run relationship, the difference term of y and z also turn into I(0). We can think $\gamma$ as an omitted variable, and add information to adjust I(1) problem. the \textbf{derivation} from the equilibrium in the previous period is measured by $\eta_{t-1}$. And if $\eta_{t-1}$ close to zero, it means the current point is close to the long - run equilibrium. If we impose $\gamma = 0$, then the error correction model reduces to a static model in first difference! 
+\\
+
+The interpretation of error correction model {\color{Red}proof 6} is regress $\Delta y_t$ on $\Delta z_t$ and $\eta_{t-1}$, and $\eta_{t-1} = y_{t-1} -\alpha - \beta\ z_{t-1}$, which is the static model on two I(1) series. and get the $\eta_{t-1}$ be the white noise. The issue is we do not know $\beta$, so we need to find $\hat{\beta}$ by \textis{ Enger Granger method}. 
+\\
+\\
+If $\eta_{t-1} >0 $, positive derivation, then $ \gamma\eta_{t-1} <0$. In this case, the current position is above the equilibrium, so next period t, we substract the $ \gamma\eta_{t-1}$ in error correction model, let $y_t$ decrease.
+\\
+\\
+If $\eta_{t-1} =0$, the model reduces to static model in first difference. i.e. if we already in equilibrium, we can trust static model with first difference. But generally we consider estimate $\eta$, as we do not know if we come to the equilibrium already.
+\\
+
+The error correction is the \textbf{reparametrization of General dynamic models}:
+\begin{equation}
+y_t\ =\ \alpha_0\ +\alpha_1y_{t-1}\ +\beta_0z_t\ +\beta_1z_{t-1}\ \ +\epsilon_t
+\end{equation}
+The lagged first difference is dynamic properties of relationship. but note that this equation contains \textbf{nonstationary variables}, while the error correction model with delta does not. \\
+{\color{Tan} \textbf{Proof 11: convert error correction model to General dynamic model}}
+\\
+
+
+P 18 - 19 Vector Error Correction model
+\\
+\\
+
+ 
+ 
+\newpage
+{\color{RoyalBlue}
+\section{Forecast}}
+
+
+
+\newpage
+{\color{RoyalBlue}
+\section{Appendix: Basic Knowledge}}
+\begin{itemize}
+\item \textbf{consistent}:
+Intuitively, it means that we can get a constant estimate of an estimator when n goes in infinity, as the standard error goes to zero. The constant is a number not very (variance is zero). 
+
+\item \textbf{unbiased}:
+On averge, it's true, but does not mean unbiased estimator is better than other estimator, for example, if the variance of unbiased estimator is relative large.
+
+\item \textbf{Random Variable}:
+RV is just a \textit{function}! that map the sample space/events to the real line (R). We need define RV as we need convert 'event' to data, and then can work with it. For example, dealing with unstructured data. \\ 
+\textit{Sample space} is a set of all possible outcomes.\\
+\textit{Outcome} is only one, but \textit{event} can be a collection of several outcomes.
+
+\item \textbf{Parameter and Estimator}:
+In classical statistics, parameter is the true and unknown constant, based on the population. As it is unknown, we need to estimate it. The estimator is a RV $\hat{\theta}(X)$, and estimate is an estiamted value based on the data/sample we have. And from this., we have distribution of estimator and want n goes to infinity.
+\item
+\textbf{Deterministic Model VS Stochastic Model}:
+Deterministic model is \textbf{fully} determined by the parameter on values and initial conditions. But stotistic model has \textbf{some inherent randomness}, the same parameter and initial condition can give different result.
+
+\end{itemize}
+
+
+
+
+
+
+
+
+\setlength{\parskip}{1em}
+\end{document}
+
+
