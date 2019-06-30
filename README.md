@@ -3,7 +3,7 @@
 #### Recommended Reading [Power Demand Foreast](../master/MachineLearningTimeSeries/Report.pdf)
 Reducing Power Supply Costs in South Australia using Statistical and ML Methods 🙂
 
-### project:
+### Projects:
 - [Power Demand Foreast](../master/MachineLearningTimeSeries/Report.pdf) Reducing Power Supply Costs in South Australia using Statistical time series Modelling and ML Methods
 - [Statistical Time Series Modelling](../master/StatisticalTimeSeries/notebook/QBUS2820_task2.ipynb) Forecast six weeks daily sales for several stores by developing a univariate forecasting model.
 
