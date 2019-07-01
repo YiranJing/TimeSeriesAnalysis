@@ -1,7 +1,7 @@
 # Time Series Analysis
 
 ### Projects:
-- **Representative Project** [Power Demand Foreast of South Australia](../master/MachineLearningTimeSeries/Report.pdf) Reducing Power Supply Costs in South Australia using Statistical time series Modelling and ML Methods. (QBUS3830)
+- [Power Demand Foreast of South Australia](../master/MachineLearningTimeSeries/Report.pdf) **Representative Project** Reducing Power Supply Costs in South Australia using Statistical time series Modelling and ML Methods. (QBUS3830)
 - [Sales Forecasting](../master/StatisticalTimeSeries/report.pdf) Forecast six weeks daily sales for several stores by developing a univariate forecasting model. (QBUS2820)
 
 ### Study Notes
