@@ -29,3 +29,6 @@ Basic Knowledge for time series regression.
 - [NN models](../master/MachineLearningTimeSeries/notebook/MachineLearningModels/NN_with_HyperparameterOptimization.ipynb) neural network with hyperparameter optimisation process
 - [Bootstrap CI](../master/MachineLearningTimeSeries/notebook/MachineLearningModels/NN_with_HyperparameterOptimization.ipynb) 
 Bootstrapping the MAPE and MAE of neural network resuduals\
+
+
+### [About Me](https://github.com/YiranJing/AboutMe/blob/master/README.md)
