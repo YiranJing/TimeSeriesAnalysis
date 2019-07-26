@@ -2,6 +2,7 @@
 
 ## Projects:
 - [Power Demand Foreast of South Australia](../master/MachineLearningTimeSeries/Report.pdf) **Representative Project** Reducing Power Supply Costs in South Australia using Statistical time series Modelling and ML Methods. (QBUS3830)
+- [AWS Forecast Golf with Weather](https://github.com/YiranJing/BigDataAnalysis/tree/master/AWS_Forecast_GolfwithWeather) Cleaning and Stationary Time series data in AWS sageMaker, and then Modeling, Deploying, and Forecasting using Sagemaker DeepAR+ and Amazon Forecast console. (Own Project)
 - [Sales Forecasting](../master/StatisticalTimeSeries/report.pdf) Forecast six weeks daily sales for several stores by developing a univariate forecasting model. (QBUS2820)
 - **Amazon Forcast** A managed time series forecasting service that uses AWS machine learning technology.
 
