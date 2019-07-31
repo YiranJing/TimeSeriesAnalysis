@@ -7,6 +7,7 @@
 - **Amazon Forcast** A managed time series forecasting service that uses AWS machine learning technology.
 
 ### Study Notes
+- [Key Concepts for Classifical time seires models](https://github.com/YiranJing/TimeSeriesAnalysis/blob/master/StatisticalTimeSeries/TimeSeries_KeyConcept/README.md) (Practical experience based)
 - [Study Notes](../master/TimeSeriesAnalysis/LinearRegressionTimeSeries-master/Notes.pdf) (ECMT 2160)
 Basic Knowledge for time series regression.
 
